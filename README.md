@@ -7,6 +7,12 @@ pre-1.0, 1.0.0.rc, and pre-deface. The name is changed to avoid
 conflits with the existing spree recurring billing gem and the spree
 item-based subscription gem.
 
+Branches: 
+
+ * master - current development
+ * 1-1-stable - stable branch for spree 1.1.x (TODO)
+ * 1-2-stable - stable branch for spree 1.2.x (TODO)
+
 Architecture
 ------------
 
@@ -17,18 +23,19 @@ subscription is created based on the line-item price of the variant. This includ
 any price modifications due to variants amounts.
 
 A subscription is attached to:
-    * The user who owns the subscription.
-    * The original order that was used to create the subscription.
-    * The variant that the subscription is based on.
-    * A list of additional orders that correspond to the weekly, monthly, daily recurring bills that are paid.
-    * A credit card token stored by a given gateway.
-    * A list of expiry notices that are sent to the user when their credit card is about to expire.
+
+ * The user who owns the subscription.
+ * The original order that was used to create the subscription.
+ * The variant that the subscription is based on.
+ * A list of additional orders that correspond to the weekly, monthly, daily recurring bills that are paid.
+ * A credit card token stored by a given gateway.
+ * A list of expiry notices that are sent to the user when their credit card is about to expire.
 
 A subscription also contains the next and previous payment dates, as well as a state machine for
 'active', 'past\_due', 'cancelled' states, allowing post-active and post-cancelled states.
 
 NOTE: Subscriptions are considered /prepaid/. The first checkout is considered the first bill. Eventually
-it would be nice to have postpaid recurring billing and a 'setup fee' attached to the product.
+it would be nice to have postpaid recurring billing and an optional setup fee attached to the product.
 
 Products contain a 'subscribable' option and a billing interval option of 'every week, every day, every month'.
 
