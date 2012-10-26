@@ -1,11 +1,11 @@
-class Spree::Subscriptions
+class Spree::Subscription < ActiveRecord::Base
 
   def self.create_from_order(order,line_item)
     # get subscription info TODO: load from product configuration.
     interval = "month"
     duration = 1  
      
-    Subscription.create(:interval => interval,
+    s = Spree::Subscription.create(:interval => interval,
                         :duration => duration,
                         :user => order.user,
                         :variant => line_item.variant,
@@ -13,9 +13,12 @@ class Spree::Subscriptions
                         :next_payment_at => Time.now + eval(duration.to_s + "." + interval.to_s),
                         :creditcard => order.creditcards[0],
                         :created_by_order_id => order.id)
+
+    return s
   end
- 
+
   attr_accessible :user,:variant,:creditcard,:parent_order,:ship_address,:bill_address,:expiry_notifications,:price,:state
+  attr_accessible :interval, :duration, :next_payment_at, :created_by_order_id
 
   belongs_to :user
   belongs_to :variant
@@ -81,6 +84,10 @@ class Spree::Subscriptions
   def due_on
     next_payment_at
   end
+
+  def due_soon?
+    next_payment_at < Time.now + 1.week
+  end 
 
   def renew
       self.update_attribute(:next_payment_at, next_payment_at + eval(self.duration.to_s + "." + self.interval.to_s))

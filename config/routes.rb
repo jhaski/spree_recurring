@@ -1,3 +1,13 @@
 Spree::Core::Engine.routes.draw do
-  # Add your extension routes here
+
+
+  namespace :admin do
+    resources :subscriptions do
+      get 'index'
+      member do 
+        post 'process_s' 
+      end
+    end
+  end
+
 end

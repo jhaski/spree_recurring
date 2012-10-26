@@ -1,0 +1,46 @@
+<script>
+    function process_subscription(id) {
+        $.ajax({ url:  '/admin/subscriptions/' + id + "/process_s", 
+                 type:  'POST' ,
+                 success: function(data) {
+                    location.reload( true );   
+                 }}
+            )
+    }
+</script>
+
+<style>
+    a.btn {
+        padding-left: 10px; 
+        padding-right: 10px; 
+        color: black !important;
+        background: #c1c1c1; 
+        border: 1px solid black; 
+        font-weight: bold;
+    }
+</style>
+<table class="index sortable" id='listing_subscriptions'>
+  <tr>
+    <th><%= sort_link @search,'user.email', t(:username), {}, {:title => 'users_email_title'} %></th>
+    <th><%= sort_link @search,'variant.name', t(:product), {} %></th>
+    <th><%= sort_link @search,'price', t(:price), {} %></th>
+    <th><%= sort_link @search,'next_payment_at', t(:next_billing_date), {} %></th>
+    <th><%= sort_link @search,'state', t(:status), {} %></th>
+    <th style="width: 50px"></th>
+  </tr>
+  <% @collection.each do |subscription| %>
+    <tr id="<%= dom_id subscription %>">
+      <td><%= subscription.user.email %></td>
+      <td><%= subscription.variant.name %></td>
+      <td><%= subscription.price %></td>
+      <td><%= subscription.next_payment_at %></td>
+      <td><%= subscription.state %></td>
+      
+      <td>
+            <% if subscription.due_soon? %>
+               <a class="btn admin_process_subscription" href="#" onclick="process_subscription(<%= subscription.id %>);" >Process</a></td>
+            <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

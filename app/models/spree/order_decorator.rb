@@ -12,10 +12,10 @@ Spree::Order.class_eval do
   end
 
   state_machine.after_transition :to => 'complete' do |order|
-    order.create_subscriptions?
+    if order.parent_subscription.nil?
+      order.create_subscriptions?
+    end
   end
-
-  private
     
     def create_subscriptions?
       order = self
@@ -24,7 +24,8 @@ Spree::Order.class_eval do
       
         if line_item.creates_subscription?
           # create
-          subscription = Subscriptions.create_from_order(order,line_item)
+          subscription = Spree::Subscription.create_from_order(order,line_item)
+          subscription.created!
           return true    
         end
         return false

@@ -13,6 +13,29 @@ Branches:
  * 1-1-stable - stable branch for spree 1.1.x (TODO)
  * 1-2-stable - stable branch for spree 1.2.x (TODO)
 
+Implemented
+-----------
+
+ * Creation of Subscription when order is completed and contains a line\_item that is subscribable.
+ * Admin Area for subscriptions, with a 'process' button.
+ * Subscription renewal by clicking of button.
+ * Configuration of product and variant to make it subscribable.
+ * Sorting of admin area subscription list.
+
+TODO:
+
+ * Searching of admin area subscription list.
+ * Allow admin state changes of subscriptions.
+ * Subscription admin view for show/edit.
+ * Re-implement mailer.
+ * Add product properties for weekly, monthly, and daily recurring subscriptions.
+ * Add administrative mailer.
+ * Implement admin pagination.
+ * Add view changes for price/interval in the shop.
+ * Add subscription list information to account page (as partial).
+ * Standardize links and ajax buttons.
+ * Cron or Whenever job for processing of recurring payments.
+
 Customizing
 -----------
 
