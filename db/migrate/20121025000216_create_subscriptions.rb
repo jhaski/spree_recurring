@@ -21,6 +21,6 @@ class CreateSubscriptions < ActiveRecord::Migration
   end
 
   def down
-    drop_table :subscriptions
+    drop_table :spree_subscriptions
   end
 end
