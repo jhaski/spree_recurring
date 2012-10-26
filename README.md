@@ -13,6 +13,31 @@ Branches:
  * 1-1-stable - stable branch for spree 1.1.x (TODO)
  * 1-2-stable - stable branch for spree 1.2.x (TODO)
 
+Customizing
+-----------
+
+### Construction ###
+
+You can customize the construction of the subscription by overriding
+Subscription.create\_from\_order(order,line\_item):
+
+    Spree::Subscriptions.instance_eval do
+        def create_from_order(order,line_item)
+            # create subscription, return subscription
+        end
+    end
+
+### Subscription State Changes ###
+
+You can also hook into the state machine of the Subscription in
+order to invoke new events on subscription creation, renewal, cancellation:
+
+    Spree::Subscriptions.class_eval do
+        state_machine.after_transaction :to => 'created' do |subscription|
+            # perform custom logic.
+        end
+    end
+
 Architecture
 ------------
 
@@ -32,7 +57,9 @@ A subscription is attached to:
  * A list of expiry notices that are sent to the user when their credit card is about to expire.
 
 A subscription also contains the next and previous payment dates, as well as a state machine for
-'active', 'past\_due', 'cancelled' states, allowing post-active and post-cancelled states.
+'created', 'active', 'past\_due', 'cancelled' states.
+
+TODO: we might need a state for 'we just got a payment for this subscription'
 
 NOTE: Subscriptions are considered /prepaid/. The first checkout is considered the first bill. Eventually
 it would be nice to have postpaid recurring billing and an optional setup fee attached to the product.

@@ -12,33 +12,19 @@ Spree::Order.class_eval do
   end
 
   state_machine.after_transition :to => 'complete' do |order|
-    order.create_subscription?
+    order.create_subscriptions?
   end
 
   private
     
-    def create_subscription?
+    def create_subscriptions?
       order = self
 
       order.line_items.map do |line_item|
       
-        if (line_item.variant.is_master? && line_item.variant.product.subscribable?) || 
-           (!line_item.variant.is_master? && line_item.variant.subscribable?)
-
-
-          # get subscription info TODO: load from product configuration.
-          interval = "month"
-          duration = 1  
-
+        if line_item.creates_subscription?
           # create
-          subscription = Subscription.create(:interval => interval,
-                                             :duration => duration,
-                                             :user => order.user,
-                                             :variant => line_item.variant,
-                                             :price => line_item.price,
-                                             :next_payment_at => Time.now + eval(duration.to_s + "." + interval.to_s),
-                                             :creditcard => order.creditcards[0],
-                                             :created_by_order_id => order.id)
+          subscription = Subscriptions.create_from_order(order,line_item)
           return true    
         end
         return false

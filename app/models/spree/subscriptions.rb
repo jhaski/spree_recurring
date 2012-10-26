@@ -1,5 +1,20 @@
 class Spree::Subscriptions
 
+  def self.create_from_order(order,line_item)
+    # get subscription info TODO: load from product configuration.
+    interval = "month"
+    duration = 1  
+     
+    Subscription.create(:interval => interval,
+                        :duration => duration,
+                        :user => order.user,
+                        :variant => line_item.variant,
+                        :price => line_item.price,
+                        :next_payment_at => Time.now + eval(duration.to_s + "." + interval.to_s),
+                        :creditcard => order.creditcards[0],
+                        :created_by_order_id => order.id)
+  end
+ 
   attr_accessible :user,:variant,:creditcard,:parent_order,:ship_address,:bill_address,:expiry_notifications,:price,:state
 
   belongs_to :user
@@ -20,7 +35,11 @@ class Spree::Subscriptions
   validates :price, :presence => true, :numericality => true
   validate :check_whole_dollar_amount
   
-  state_machine :state, :initial => 'active' do
+  state_machine :state, :initial => 'created' do
+    event :created do
+      transition :to => 'active'
+    end
+  
     event :cancel do
       transition :to => 'canceled', :if => :allow_cancel?
     end
