@@ -12,23 +12,21 @@ Spree::Order.class_eval do
   end
 
   state_machine.after_transition :to => 'complete' do |order|
+    # only create a subscription of the order being completed isn't already attached to a subscription.
     if order.parent_subscription.nil?
-      order.create_subscriptions?
+      order.create_subscriptions
     end
   end
     
-    def create_subscriptions?
-      order = self
-
-      order.line_items.map do |line_item|
-      
-        if line_item.creates_subscription?
-          # create
-          subscription = Spree::Subscription.create_from_order(order,line_item)
-          subscription.created!
-          return true    
-        end
-        return false
-      end.reduce(0) { |x,i| x ? i+1 : i } # get the subscription count
-    end
+  def create_subscriptions
+    order = self
+    order.line_items.map do |line_item|
+      if line_item.creates_subscription?
+        subscription = Spree::Subscription.create_from_order(order,line_item)
+        subscription.created!
+        return true    
+      end
+      return false
+    end.reduce(0) { |x,i| x ? i+1 : i } # get the subscription count
+  end
 end
