@@ -21,16 +21,18 @@ Implemented
  * Subscription renewal by clicking of button.
  * Configuration of product and variant to make it subscribable.
  * Sorting of admin area subscription list.
+ * User managed billing system.
 
 TODO:
 
+ * (DONE) Add controller/view for self updating of subscription. 
  * (DONE) Add subscription list information to account page (as partial).
  * (DONE) Implement admin pagination.
  * Add administrative mailer.
- * Add controller/view for self updating of subscription. 
+ * Add billing address form for updating credit card.
  * Add product properties for weekly, monthly, and daily recurring subscriptions.
- * Add view changes for price/interval in the shop.
  * Add subscription cancellation actions.
+ * Add view changes for price/interval in the shop.
  * Allow admin state changes of subscriptions.
  * Cron or Whenever job for processing of recurring payments.
  * Re-implement mailer.

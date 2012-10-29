@@ -3,8 +3,8 @@ class Spree::Subscription < ActiveRecord::Base
   def self.create_from_order(order,line_item)
     # get subscription info TODO: load from product configuration.
     interval = "month"
-    duration = 1  
-     
+    duration = 1
+
     s = Spree::Subscription.create(:interval => interval,
                         :duration => duration,
                         :user => order.user,
@@ -17,6 +17,7 @@ class Spree::Subscription < ActiveRecord::Base
     return s
   end
 
+
   attr_accessible :user,:variant,:creditcard,:parent_order,:ship_address,:bill_address,:expiry_notifications,:price,:state
   attr_accessible :interval, :duration, :next_payment_at, :created_by_order_id
 
@@ -25,24 +26,24 @@ class Spree::Subscription < ActiveRecord::Base
   belongs_to :creditcard
 
   belongs_to :parent_order, :class_name => "Spree::Order", :foreign_key => :created_by_order_id
-  
+
   belongs_to :ship_address, :foreign_key => :shipping_address_id
   belongs_to :bill_address, :foreign_key => :billing_address_id
 
   has_many :expiry_notifications
-  
+
   has_many :subsequent_orders, :class_name => "Spree::Order", :foreign_key => :created_by_subscription_id
 
   accepts_nested_attributes_for :creditcard
 
   validates :price, :presence => true, :numericality => true
   validate :check_whole_dollar_amount
-  
+
   state_machine :state, :initial => 'created' do
     event :created do
       transition :to => 'active'
     end
-  
+
     event :cancel do
       transition :to => 'canceled', :if => :allow_cancel?
     end
@@ -50,7 +51,7 @@ class Spree::Subscription < ActiveRecord::Base
     event :expire do
       transition :to => 'expired'
     end
-    
+
     event :reactivate do
       transition :to => 'active', :from => ['expired', 'error', 'declined']
     end
@@ -59,15 +60,15 @@ class Spree::Subscription < ActiveRecord::Base
       transition 'active' => 'error', :if => :third_decline?
       transition 'active' =>  same
     end
-    
+
     before_transition :on => :reactivate, :do => :sanctify
     before_transition :on => :declined, :do => :bump_up_declined_count
-  end 
+  end
 
   scope :backlog, lambda{{:conditions => ["next_payment_at <= ? ", Time.now] }}
   scope :active, lambda{{:conditions => {:state => "active"}}}
 
- 
+
   def allow_cancel?
     self.state != 'canceled'
   end
@@ -87,14 +88,14 @@ class Spree::Subscription < ActiveRecord::Base
 
   def due_soon?
     next_payment_at < Time.now + 1.week
-  end 
+  end
 
   def renew
       self.update_attribute(:next_payment_at, next_payment_at + eval(self.duration.to_s + "." + self.interval.to_s))
   end
 
 
-  def backlogged? 
+  def backlogged?
     self.next_payment_at <= Time.now ? true : false
   end
 
@@ -121,5 +122,17 @@ class Spree::Subscription < ActiveRecord::Base
   def bump_up_declined_count
     self.declined_count += 1
   end
+
+  def available_payment_methods
+    @available_payment_methods ||= Spree::PaymentMethod.available(:front_end)
+  end
+
+    def payment_method
+#      if payment and payment.payment_method
+#        payment.payment_method
+#      else
+        available_payment_methods.first
+#      end
+    end
 
 end
