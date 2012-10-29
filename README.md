@@ -9,7 +9,7 @@ item-based subscription gem.
 
 Branches: 
 
- * master - current development
+ * master - current development (targeting spree 1.1.x)
  * 1-1-stable - stable branch for spree 1.1.x (TODO)
  * 1-2-stable - stable branch for spree 1.2.x (TODO)
 
@@ -24,17 +24,18 @@ Implemented
 
 TODO:
 
- * Searching of admin area subscription list.
- * Allow admin state changes of subscriptions.
- * Subscription admin view for show/edit.
- * Re-implement mailer.
- * Add product properties for weekly, monthly, and daily recurring subscriptions.
- * Add administrative mailer.
+ * (DONE) Add subscription list information to account page (as partial).
  * (DONE) Implement admin pagination.
+ * Add administrative mailer.
+ * Add controller/view for self updating of subscription. 
+ * Add product properties for weekly, monthly, and daily recurring subscriptions.
  * Add view changes for price/interval in the shop.
- * Add subscription list information to account page (as partial).
- * Standardize links and ajax buttons.
+ * Allow admin state changes of subscriptions.
  * Cron or Whenever job for processing of recurring payments.
+ * Re-implement mailer.
+ * Searching of admin area subscription list.
+ * Standardize links and ajax buttons.
+ * Subscription admin view for show/edit.
 
 Customizing
 -----------
@@ -104,6 +105,10 @@ The account section contains a Users Subscription list, where they can open a su
 the details of the subscription, including the billing details to use.
 
 The products marked as 'subscribable' have a price listed as X/month,day,year, depending on the product configuration.
+
+#### Partials ####
+
+ * spree/user/subscriptions - user list
 
 Installing
 ----------

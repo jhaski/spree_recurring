@@ -1,0 +1,23 @@
+<% if @subscriptions.present? %>
+<h3><%= t(:subscriptions) %></h3>
+<table>
+<thead>
+    <tr>
+      <th><%= Spree::Product.model_name.human %></th>
+      <th><%= t(:next_billing_date) %></th>
+      <th><%= t(:next_billing_cost) %></th>
+      <th><%= t(:status) %></th>
+      <th></th>
+    </tr>
+</thead>
+<tbody>
+    <% @subscriptions.each do |subscription| %>
+      <tr class="<%= cycle('even', 'odd') %>">
+        <td><%= subscription.variant.name %></td>
+        <td><%= subscription.next_payment_at %></td>
+        <td><%= subscription.price %></td>
+        <td><%= subscription.state %></td>
+     </tr>
+   <% end %>
+</table>
+<% end %>
