@@ -34,6 +34,7 @@ TODO:
  * Add subscription cancellation actions.
  * Add view changes for price/interval in the shop.
  * Allow admin state changes of subscriptions.
+ * Create address and credit card CRUDs.
  * Cron or Whenever job for processing of recurring payments.
  * Re-implement mailer.
  * Searching of admin area subscription list.
@@ -77,7 +78,7 @@ any price modifications due to variants amounts.
 A subscription is attached to:
 
  * The user who owns the subscription.
- * The original order that was used to create the subscription.
+ * The original order that was used to create the subscription OR The gateway to process the initial payments.
  * The variant that the subscription is based on.
  * A list of additional orders that correspond to the weekly, monthly, daily recurring bills that are paid.
  * A credit card token stored by a given gateway.
@@ -92,6 +93,9 @@ NOTE: Subscriptions are considered /prepaid/. The first checkout is considered t
 it would be nice to have postpaid recurring billing and an optional setup fee attached to the product.
 
 Products contain a 'subscribable' option and a billing interval option of 'every week, every day, every month'.
+
+A subscription does not have to have a credit card attached, but it requires an attached credit card processing
+gateway so that when a credit card is attached, the subscription can know where to store its PCI compliant data.
 
 ### Frontend ####
 

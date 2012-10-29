@@ -18,7 +18,11 @@
         <td><%= subscription.next_payment_at.to_s(:short) %></td>
         <td><%= subscription.price %></td>
         <td><%= subscription.state %></td>
+        <% if subscription.creditcard %>
         <td><%= subscription.creditcard.display_number.sub('-','')[-4,4] %>(<a href="/account/subscriptions/<%= subscription.id %>/cc">update</a>)</td>
+        <% else %>
+        <td>No Credit Card!(<a href="/account/subscriptions/<%= subscription.id %>/cc">add</a>)</td>
+        <% end %>
         <td style="width:150px;"><a style="float:right" href="#" class="button">Cancel</a></td>
      </tr>
    <% end %>

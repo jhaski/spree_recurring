@@ -12,18 +12,24 @@ class Spree::Subscription < ActiveRecord::Base
                         :price => line_item.price,
                         :next_payment_at => Time.now + eval(duration.to_s + "." + interval.to_s),
                         :creditcard => order.creditcards[0],
-                        :created_by_order_id => order.id)
+                        :created_by_order_id => order.id,
+                        :gateway => order.payment_method)
 
     return s
   end
 
+  def get_gateway
+    return self.gateway if not self.gateway.nil?
+    return self.parent_order.payment_method if not self.parent_order.nil?
+  end
 
   attr_accessible :user,:variant,:creditcard,:parent_order,:ship_address,:bill_address,:expiry_notifications,:price,:state
-  attr_accessible :interval, :duration, :next_payment_at, :created_by_order_id
+  attr_accessible :interval, :duration, :next_payment_at, :created_by_order_id,:gateway
 
   belongs_to :user
   belongs_to :variant
   belongs_to :creditcard
+  belongs_to :gateway
 
   belongs_to :parent_order, :class_name => "Spree::Order", :foreign_key => :created_by_order_id
 

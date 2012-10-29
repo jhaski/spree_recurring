@@ -7,27 +7,18 @@ module Spree
     prepend_before_filter :load_object, :only => [:cc_update, :cc_edit]
     prepend_before_filter :authorize_actions, :only => [:cc_update,:cc_edit]
 
-def create_profile(payment)
-card = find_card(payment)
-address = self.find_address(payment)
-email = self.find_email(payment)
-if card.gateway_customer_profile_id.nil?
-_,profile_id = self.create_customer_profile(card,address,email,"#{Time.now.to_f}")
-card.update_attributes(
-:gateway_customer_profile_id => profile_id,
-:gateway_payment_profile_id => profile_id)
-end
-end
-
     def cc_update
        @user = current_user
        @subscription = Spree::Subscription.where(:user_id => @user).find(params[:id])
        @order = @subscription.parent_order
 
-       #flash[:notice] = @order.payment_method.id.to_s + " " + params["payment_source"].to_s
+       if not @order
+          payment_id = "1"
+       else
+          payment_id = @order.payment_method.id.to_s
+       end
 
-       payment_id = @order.payment_method.id.to_s
-       gw = @order.payment_method
+       gw = @subscription.get_gateway
        cc = Spree::Creditcard.new(:first_name => params["payment_source"][payment_id]["first_name"],
                                      :last_name => params["payment_source"][payment_id]["last_name"],
                                      :month => params["payment_source"][payment_id]["month"],
@@ -47,9 +38,7 @@ end
 
        @subscription.save!
 
-       #if @address.update_attributes(params[:address])
-       #flash[:notice] = I18n.t(:successfully_updated, :resource => I18n.t(:creditcard))
-       #end
+       flash[:notice] = I18n.t(:successfully_updated, :resource => I18n.t(:creditcard))
 
        redirect_back_or_default(account_path)
     end
@@ -62,6 +51,12 @@ end
        @user = current_user #TODO: use before filter
        @subscription = Spree::Subscription.where(:user_id => @user).find(params[:id])
        @order = @subscription.parent_order
+
+       if @order.nil?
+         @payment_method_id = 1
+       else
+         @payment_method_id = @order.payment_method.id
+       end
        session["user_return_to"] = request.env['HTTP_REFERER']
     end
 
