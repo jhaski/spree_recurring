@@ -24,9 +24,7 @@ Spree::Order.class_eval do
       if line_item.creates_subscription?
         subscription = Spree::Subscription.create_from_order(order,line_item)
         subscription.created!
-        return true    
       end
-      return false
-    end.reduce(0) { |x,i| x ? i+1 : i } # get the subscription count
+    end
   end
 end
