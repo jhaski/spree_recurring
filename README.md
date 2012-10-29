@@ -30,7 +30,7 @@ TODO:
  * Re-implement mailer.
  * Add product properties for weekly, monthly, and daily recurring subscriptions.
  * Add administrative mailer.
- * Implement admin pagination.
+ * (DONE) Implement admin pagination.
  * Add view changes for price/interval in the shop.
  * Add subscription list information to account page (as partial).
  * Standardize links and ajax buttons.
