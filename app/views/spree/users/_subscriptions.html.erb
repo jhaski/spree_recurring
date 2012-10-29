@@ -7,6 +7,7 @@
       <th><%= t(:next_billing_date) %></th>
       <th><%= t(:next_billing_cost) %></th>
       <th><%= t(:status) %></th>
+      <th><%= t(:credit_card) %></th>
       <th></th>
     </tr>
 </thead>
@@ -14,9 +15,11 @@
     <% @subscriptions.each do |subscription| %>
       <tr class="<%= cycle('even', 'odd') %>">
         <td><%= subscription.variant.name %></td>
-        <td><%= subscription.next_payment_at %></td>
+        <td><%= subscription.next_payment_at.to_s(:short) %></td>
         <td><%= subscription.price %></td>
         <td><%= subscription.state %></td>
+        <td><%= subscription.creditcard.display_number.sub('-','')[-4,4] %>(<a href="/account/subscription/<%= subscription.id %>/update/cc">update</a>)</td>
+        <td style="width:150px;"><a style="float:right" href="#" class="button">Cancel</a></td>
      </tr>
    <% end %>
 </table>

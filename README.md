@@ -30,6 +30,7 @@ TODO:
  * Add controller/view for self updating of subscription. 
  * Add product properties for weekly, monthly, and daily recurring subscriptions.
  * Add view changes for price/interval in the shop.
+ * Add subscription cancellation actions.
  * Allow admin state changes of subscriptions.
  * Cron or Whenever job for processing of recurring payments.
  * Re-implement mailer.
