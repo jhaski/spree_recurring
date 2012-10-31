@@ -45,29 +45,31 @@ class Spree::Subscription < ActiveRecord::Base
   validates :price, :presence => true, :numericality => true
   validate :check_whole_dollar_amount
 
-  state_machine :state, :initial => 'created' do
-    event :created do
-      transition :to => 'active'
-    end
+  state_machine :state, :initial => :active do
 
     event :cancel do
-      transition :to => 'canceled', :if => :allow_cancel?
+      transition :to => :canceled, :if => :allow_cancel?
     end
 
     event :expire do
-      transition :to => 'expired'
+      transition :to => :expired
     end
 
     event :reactivate do
-      transition :to => 'active', :from => ['expired', 'error', 'declined']
+      transition :to => :active, :from => [:expired, :error, :declined]
+    end
+
+    event :renew do
+      transition :active => same
     end
 
     event :declined do
-      transition 'active' => 'error', :if => :third_decline?
-      transition 'active' =>  same
+      transition :active => :error, :if => :third_decline?
+      transition :active =>  same
     end
-
-    before_transition :on => :reactivate, :do => :sanctify
+ 
+    after_transition :on => :renew, :do => [:on_renew,:reset_declined_count]
+    before_transition :on => :reactivate, :do => :reset_declined_count
     before_transition :on => :declined, :do => :bump_up_declined_count
   end
 
@@ -96,7 +98,7 @@ class Spree::Subscription < ActiveRecord::Base
     next_payment_at < Time.now + 1.week
   end
 
-  def renew
+  def on_renew
       self.update_attribute(:next_payment_at, next_payment_at + eval(self.duration.to_s + "." + self.interval.to_s))
   end
 
@@ -110,7 +112,7 @@ class Spree::Subscription < ActiveRecord::Base
   end
 
   def third_decline?
-    self.declined_amount >= 2
+    self.declined_count >= 2
   end
 
   def subscription_bill_address
@@ -128,6 +130,7 @@ class Spree::Subscription < ActiveRecord::Base
   def bump_up_declined_count
     self.declined_count += 1
   end
+
 
   def available_payment_methods
     @available_payment_methods ||= Spree::PaymentMethod.available(:front_end)

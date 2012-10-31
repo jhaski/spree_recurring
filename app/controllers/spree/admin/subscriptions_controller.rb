@@ -11,12 +11,11 @@ class Spree::Admin::SubscriptionsController < Spree::Admin::ResourceController
       new_order = sub.subsequent_orders.build
       new_order.save!
         
-      template_order = sub.parent_order
-      new_order.user = template_order.user
-      new_order.bill_address = template_order.bill_address
-      new_order.ship_address = template_order.ship_address
-      new_order.email        = template_order.email
-      new_order.save
+      new_order.user        = sub.user
+      new_order.bill_address = sub.bill_address
+      new_order.ship_address = sub.ship_address
+      new_order.email        = sub.user.email
+      new_order.save!
 
       #Add a line item from the variant on this sub and set the price
       new_order.add_variant( sub.variant )
@@ -26,11 +25,10 @@ class Spree::Admin::SubscriptionsController < Spree::Admin::ResourceController
       new_order.save
 
       #Process payment for the order
-      template_payment = template_order.payments.first
       new_payment = Spree::Payment.new
       new_payment.amount            = new_order.total 
-      new_payment.source            = template_payment.source
-      new_payment.payment_method_id = template_payment.payment_method_id
+      new_payment.source            = sub.creditcard
+      new_payment.payment_method    = sub.gateway
 
       new_order.payments << new_payment
       new_order.update! #updating totals
@@ -43,7 +41,7 @@ class Spree::Admin::SubscriptionsController < Spree::Admin::ResourceController
 
       puts "Order number: #{sub.subsequent_orders.last.number} created"
 
-      sub.renew
+      sub.renew!
       if new_order.payments.last.state == 'completed'
         sub.reset_declined_count
         puts "Subscription renewed"
