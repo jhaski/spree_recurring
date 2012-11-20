@@ -15,6 +15,7 @@ class Spree::Subscription < ActiveRecord::Base
                         :created_by_order_id => order.id,
                         :gateway => order.payment_method)
 
+
     return s
   end
 
@@ -45,7 +46,7 @@ class Spree::Subscription < ActiveRecord::Base
   validates :price, :presence => true, :numericality => true
   validate :check_whole_dollar_amount
 
-  state_machine :state, :initial => :active do
+  state_machine :state, :initial => :created do
 
     event :cancel do
       transition :to => :canceled, :if => :allow_cancel?
@@ -57,6 +58,10 @@ class Spree::Subscription < ActiveRecord::Base
 
     event :reactivate do
       transition :to => :active, :from => [:expired, :error, :declined]
+    end
+
+    event :activate do
+      transition :to => :active, :from => [:created]
     end
 
     event :renew do
@@ -75,7 +80,7 @@ class Spree::Subscription < ActiveRecord::Base
 
   scope :backlog, lambda{{:conditions => ["next_payment_at <= ? ", Time.now] }}
   scope :active, lambda{{:conditions => {:state => "active"}}}
-
+  scope :created, lambda{{:conditions => {:state => "created"}}}
 
   def allow_cancel?
     self.state != 'canceled'

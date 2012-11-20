@@ -23,6 +23,7 @@ Spree::Order.class_eval do
     order.line_items.map do |line_item|
       if line_item.creates_subscription?
         subscription = Spree::Subscription.create_from_order(order,line_item)
+        subscription.activate!
       end
     end
   end
