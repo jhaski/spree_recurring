@@ -4,8 +4,13 @@ module Spree
     helper 'spree/admin/navigation'
     helper_method :current_user
 
-    prepend_before_filter :load_object, :only => [:cc_update, :cc_edit]
+    prepend_before_filter :load_object, :only => [:cc_update, :cc_edit,:cancel_subscription]
     prepend_before_filter :authorize_actions, :only => [:cc_update,:cc_edit]
+
+    def cancel_subscription
+       @user = current_user
+       @subscription = Spree::Subscription.where(:user_id => @user).find(params[:id])
+    end
 
     def cc_update
        @user = current_user
