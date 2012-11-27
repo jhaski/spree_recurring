@@ -24,7 +24,7 @@ module Spree
       # create and modify data
       Spree::CancellationData.create! \
         :reasons => reasons,
-        :comments => comments
+        :comments => comments,
         :subscription => sub
 
       sub.cancel!
