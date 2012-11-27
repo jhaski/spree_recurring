@@ -41,6 +41,7 @@ TODO:
  * Standardize links and ajax buttons.
  * Subscription admin view for show/edit.
  * Remove specific wording on cancellation page.
+ * Allow and documation of additional cancellation data.
 
 Customizing
 -----------

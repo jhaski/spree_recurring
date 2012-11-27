@@ -23,7 +23,9 @@
         <% else %>
         <td>No Credit Card!(<a href="/account/subscriptions/<%= subscription.id %>/cc">add</a>)</td>
         <% end %>
-        <td style="width:150px;"><a style="float:right" href="/account/subscriptions/<%= subscription.id %>/cancel" class="button">Cancel</a></td>
+        <% if subscription.allow_cancel? %>
+            <td style="width:150px;"><a style="float:right" href="/account/subscriptions/<%= subscription.id %>/cancel" class="button">Cancel</a></td>
+        <% end %>
      </tr>
    <% end %>
 </table>

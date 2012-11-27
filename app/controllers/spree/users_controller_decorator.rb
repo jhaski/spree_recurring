@@ -4,8 +4,34 @@ module Spree
     helper 'spree/admin/navigation'
     helper_method :current_user
 
-    prepend_before_filter :load_object, :only => [:cc_update, :cc_edit,:cancel_subscription]
-    prepend_before_filter :authorize_actions, :only => [:cc_update,:cc_edit]
+    prepend_before_filter :load_object, :only => [:cc_update, :cc_edit,:cancel_subscription, :cancel_subscription_action]
+    prepend_before_filter :authorize_actions, :only => [:cc_update,:cc_edit,:cancel_subscription_action]
+
+    def cancel_subscription_action
+
+      # read input
+      sub = Spree::Subscription.find(params[:id])
+
+      if params[:yes].downcase != 'yes'
+        flash[:error] = "Please type 'YES' in the box below if you would like to cancel."
+        redirect_to("/account/subscriptions/#{sub.id}/cancel")
+        return
+      end
+      
+      comments = params[:comments]
+      reasons = params.map { |key,val| val if key =~ /reason/ }.compact
+
+      # create and modify data
+      Spree::CancellationData.create! \
+        :reasons => reasons,
+        :comments => comments
+        :subscription => sub
+
+      sub.cancel!
+    
+      # navigate away.
+      redirect_to('/account')
+    end
 
     def cancel_subscription
        @user = current_user
