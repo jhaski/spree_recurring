@@ -50,7 +50,7 @@ module Spree
        end
 
        gw = @subscription.get_gateway
-       cc = Spree::Creditcard.new(:first_name => params["payment_source"][payment_id]["first_name"],
+       cc = Spree::Creditcard.new(   :first_name => params["payment_source"][payment_id]["first_name"],
                                      :last_name => params["payment_source"][payment_id]["last_name"],
                                      :month => params["payment_source"][payment_id]["month"],
                                      :year => params["payment_source"][payment_id]["year"],
@@ -63,7 +63,7 @@ module Spree
 
        cc.save!
 
-       gw.create_profile(cc)
+       gw.create_profile(cc, @order.bill_address, @user.email)
 
        @subscription.creditcard = cc
 
