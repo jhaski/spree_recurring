@@ -1,6 +1,7 @@
 class Spree::Subscription < ActiveRecord::Base
 
   def self.create_from_order(order,line_item)
+
     # get subscription info TODO: load from product configuration.
     interval = "month"
     duration = 1
@@ -76,6 +77,7 @@ class Spree::Subscription < ActiveRecord::Base
     after_transition :on => :renew, :do => [:on_renew,:reset_declined_count]
     before_transition :on => :reactivate, :do => :reset_declined_count
     before_transition :on => :declined, :do => :bump_up_declined_count
+    after_transition :on => :renew, :do => :renew_subscription
   end
 
   scope :backlog, lambda{{:conditions => ["next_payment_at <= ? ", Time.now] }}
@@ -148,5 +150,47 @@ class Spree::Subscription < ActiveRecord::Base
         available_payment_methods.first
 #      end
     end
+
+  def renew_subscription
+    new_order = self.subsequent_orders.build
+    new_order.save!
+
+    new_order.user = self.user
+    new_order.bill_address = self.bill_address
+    new_order.ship_address = self.ship_address
+    new_order.email = self.user.email
+
+    #Add a line item from the variant on this sub and set the price
+    new_order.add_variant( self.variant )
+    #NOTE settting quantity as opposed to price becuase during processing payments the order and price will get flipped
+    new_order.line_items.first.quantity = self.price.to_i #doing this will clip a price like 8.8 to 8)
+    new_order.line_items.first.price = 1
+    new_order.save!
+
+    #Process payment for the order
+    new_payment = Spree::Payment.new
+    new_payment.amount            = new_order.total 
+    new_payment.source            = self.creditcard
+    new_payment.payment_method    = self.gateway
+
+    new_order.payments << new_payment
+    new_order.update! #updating totals
+
+    #By setting to confirm we can do new_order.next and we get all the same
+    #callbacks as if you were on the order form itself
+    new_order.state = 'confirm'
+    new_order.next
+    new_order.save!
+
+    if new_order.payments.last.state == 'completed'
+      self.reset_declined_count
+      puts "Subscription renewed"
+    else
+      self.declined
+#      SubscriptionsMailer.declined_creditcard_message(sub).deliver
+      puts "There was an error proccesing the subscription. Subscription state set to 'error'. Subscription not renewed"
+    end
+
+  end
 
 end
