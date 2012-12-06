@@ -22,8 +22,8 @@
 <table class="index sortable" id='listing_subscriptions'>
   <tr>
     <th><%= sort_link @search,'user.email', t(:username), {}, {:title => 'users_email_title'} %></th>
-    <th><%= sort_link @search,'variant.name', t(:product), {} %></th>
     <th><%= sort_link @search,'price', t(:price), {} %></th>
+    <!-- TODO: Read normalized variant description from subscription table -->
     <th><%= sort_link @search,'next_payment_at', t(:next_billing_date), {} %></th>
     <th><%= sort_link @search,'state', t(:status), {} %></th>
     <th style="width: 50px"></th>
@@ -31,7 +31,6 @@
   <% @collection.each do |subscription| %>
     <tr id="<%= dom_id subscription %>">
       <td><%= subscription.user.email %></td>
-      <td><%= subscription.variant.name %></td>
       <td><%= subscription.price %></td>
       <td><%= subscription.next_payment_at %></td>
       <td><%= subscription.state %></td>
