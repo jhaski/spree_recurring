@@ -66,7 +66,7 @@ class Spree::Subscription < ActiveRecord::Base
   accepts_nested_attributes_for :creditcard
 
   validates :price, :presence => true, :numericality => true
-  validate :check_whole_dollar_amount
+#  validate :check_whole_dollar_amount
 
   state_machine :state, :initial => :created do
 
@@ -115,7 +115,7 @@ class Spree::Subscription < ActiveRecord::Base
 
   def check_whole_dollar_amount
     # why does this need to be true?
-    errors.add(:price,"should be a whole dollar amount") if self.price.to_i != self.price
+    #errors.add(:price,"should be a whole dollar amount") if self.price.to_i != self.price
   end
 
   def due_on
