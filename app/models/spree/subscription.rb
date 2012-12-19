@@ -49,7 +49,7 @@ class Spree::Subscription < ActiveRecord::Base
   attr_accessible :user,:variants,:creditcard,:parent_order,:ship_address,:bill_address,:expiry_notifications,:price,:state
   attr_accessible :interval, :duration, :next_payment_at, :created_by_order_id,:gateway
 
-  has_and_belongs_to_many :variants, :class_name => "Spree::Variant", :join_table => "spree_additional_subscription_variants"
+  has_and_belongs_to_many :variants, :class_name => "::Spree::Variant", :join_table => "spree_additional_subscription_variants"
   belongs_to :user
   belongs_to :creditcard
   belongs_to :gateway
@@ -61,7 +61,7 @@ class Spree::Subscription < ActiveRecord::Base
 
   has_many :expiry_notifications
 
-  has_many :subsequent_orders, :class_name => "Spree::Order", :foreign_key => :created_by_subscription_id
+  has_many :subsequent_orders, :class_name => "::Spree::Order", :foreign_key => :created_by_subscription_id
 
   accepts_nested_attributes_for :creditcard
 
