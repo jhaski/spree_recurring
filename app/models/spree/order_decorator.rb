@@ -11,7 +11,7 @@ Spree::Order.class_eval do
     self.parent_subscription.present?
   end
 
-  state_machine.after_transition :to => 'complete' do |order|
+  state_machine.after_transition :to => :complete do |order|
     # only create a subscription of the order being completed isn't already attached to a subscription.
     if order.parent_subscription.nil?
       order.create_subscriptions
